@@ -53,6 +53,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/D _CRT_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -73,7 +74,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -100,14 +101,20 @@
     <None Include="json_internalmap.inl" />
     <None Include="json_valueiterator.inl" />
     <None Include="ReadMe.txt" />
+    <None Include="res\coin.ico" />
     <None Include="res\UIDemo.ico" />
     <None Include="res\UIDemo.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnonymTxDlg.h" />
+    <ClInclude Include="BaseDlg.h" />
     <ClInclude Include="BaseFuncionDlg.h" />
+    <ClInclude Include="BaseFunctionExDlg.h" />
     <ClInclude Include="BusinessDlg.h" />
     <ClInclude Include="CommonStruct.h" />
+    <ClInclude Include="DarkTxDlg.h" />
     <ClInclude Include="DemoSocket.h" />
+    <ClInclude Include="JsonConfigHelp.h" />
     <ClInclude Include="json\autolink.h" />
     <ClInclude Include="json\config.h" />
     <ClInclude Include="json\features.h" />
@@ -116,6 +123,9 @@
     <ClInclude Include="json\reader.h" />
     <ClInclude Include="json\value.h" />
     <ClInclude Include="json\writer.h" />
+    <ClInclude Include="LoadLanguage.h" />
+    <ClInclude Include="LotteryDlg.h" />
+    <ClInclude Include="P2PBetDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RPCDlg.h" />
     <ClInclude Include="SesureDlg.h" />
@@ -123,13 +133,19 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="UIDemo.h" />
     <ClInclude Include="UIDemotDlg.h" />
+    <ClInclude Include="UpdateVerDlg.h" />
     <ClInclude Include="WalletDlg.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnonymTxDlg.cpp" />
+    <ClCompile Include="BaseDlg.cpp" />
     <ClCompile Include="BaseFuncionDlg.cpp" />
+    <ClCompile Include="BaseFunctionExDlg.cpp" />
     <ClCompile Include="BusinessDlg.cpp" />
     <ClCompile Include="CommonStruct.cpp" />
+    <ClCompile Include="DarkTxDlg.cpp" />
     <ClCompile Include="DemoSocket.cpp" />
+    <ClCompile Include="JsonConfigHelp.cpp" />
     <ClCompile Include="json_reader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -142,6 +158,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="LoadLanguage.cpp" />
+    <ClCompile Include="LotteryDlg.cpp" />
+    <ClCompile Include="P2PBetDlg.cpp" />
     <ClCompile Include="RPCDlg.cpp" />
     <ClCompile Include="SesureDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -150,6 +169,7 @@
     </ClCompile>
     <ClCompile Include="UIDemo.cpp" />
     <ClCompile Include="UIDemoDlg.cpp" />
+    <ClCompile Include="UpdateVerDlg.cpp" />
     <ClCompile Include="WalletDlg.cpp" />
   </ItemGroup>
   <ItemGroup>

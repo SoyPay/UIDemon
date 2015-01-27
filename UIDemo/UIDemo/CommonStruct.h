@@ -8,28 +8,87 @@
 #include <string>
 #include <vector>
 #include "json\json.h"
+
 using namespace std;
+static const ULONGLONG COIN = 100000000;
+#define REAL_MONEY(x) static_cast<int>((x)*COIN)
 
 #define BEGIN(a)            ((char*)&(a))
 #define END(a)              ((char*)&((&(a))[1]))
 
-#define WM_SEND_RPC_DATA	WM_USER+1
-#define WM_SHOW_RECV_DATA	WM_USER+2
-#define WM_SOCKET_RECEIVE	WM_USER+3
-#define WM_SOCKET_CLOSE		WM_USER+4
-#define WM_SOCKET_CONNECT	WM_USER+5
-#define WM_SHOW_SEND_DATA	WM_USER+6
+#define WM_SEND_RPC_DATA		WM_USER+1
+#define WM_SHOW_RECV_DATA		WM_USER+2
+#define WM_SOCKET_RECEIVE		WM_USER+3
+#define WM_SOCKET_CLOSE			WM_USER+4
+#define WM_SOCKET_CONNECT		WM_USER+5
+#define WM_SHOW_SEND_DATA		WM_USER+6
+#define WM_UPDATE_HEIGHT		WM_USER+7
+#define WM_GET_ACCOUNTINFO		WM_USER+8
+#define WM_LIST_TX				WM_USER+9
+#define WM_GET_ACCLIST			WM_USER+10
+#define WM_GET_BET_RANDOM_DATA	WM_USER+11
 
 typedef enum
 {
 	emRPCCommand = 1,
 	emBaseFunction,
+	emRegisterScript,
 	emContract,
-	emGetData,
+	emGetAccData,
+	emGetAccountInfo,
+	emGetRegScriptHash,
+	emGetRegScriptID,
+	emGetBetRandomData,
+	emListTx,
 	emNoType
 }emSendDataType;
 
-//担保合约结构
+#define DEFINE_SINGLETON(cls)\
+ private:\
+ static std::auto_ptr<cls> m_pInstance;\
+ protected:\
+ cls(){}\
+ public:\
+ ~cls(){}\
+ static cls* getInstance(){\
+ if(!m_pInstance.get()){\
+ m_pInstance = std::auto_ptr<cls>(new cls());\
+ }\
+ return m_pInstance.get();\
+	}
+
+#define IMPLEMENT_SINGLETON(cls) \
+	std::auto_ptr<cls> cls::m_pInstance(NULL);
+
+typedef enum 
+{
+	emSesureTx=1,
+	emDarkTx,
+	emAnonymTx,
+	emP2PBet,
+	emLottery,
+	emNonType,
+}emBusinessType;
+
+//权限结构
+typedef struct _AUTHORIZATE
+{
+	_AUTHORIZATE()
+	{
+		nAuthorizeTime = 0;
+		nMaxMoneyPerTime = 0;
+		nMaxMoneyTotal = 0;
+		nMaxMoneyPerDay = 0;
+	}
+
+	int nAuthorizeTime;
+	double nMaxMoneyPerTime;
+	double nMaxMoneyTotal;
+	double nMaxMoneyPerDay;
+	string strUserData;
+}AUTHORIZATE;
+
+//*****************************担保合约结构************************************
 #define ACCOUNT_ID_SIZE 6
 #define MAX_ARBITRATOR 3
 #define MAX_ACCOUNT_LEN 20
@@ -43,6 +102,23 @@ typedef enum
 	emLastStep,
 	emInvalidStep
 }enumSesureTrade;
+
+typedef enum
+{
+	emDarkFirstStep = 1,
+	emDarkSecondStep = 2,
+	emDarkThirdStep = 3,
+	emInvalidDarkStep
+}enumDarkTx;
+
+typedef enum
+{
+	emP2PBetASend = 1,
+	emP2PBetBAccept,
+	emP2PBetAExpose,
+	emP2PBetBExpose,
+	emInvalidP2PBet
+}enumP2PBet;
 
 typedef struct tag_INT64 {
 	unsigned char data[8];
@@ -68,15 +144,92 @@ typedef struct  {
 }FIRST_CONTRACT;
 
 typedef struct {
-	unsigned char nType;				//!<交易类型
-	unsigned char hash[HASH_SIZE];		//!<上一个交易包的哈希
+	unsigned char nType;					//!<交易类型
+	unsigned char hash[HASH_SIZE];			//!<上一个交易包的哈希
 } NEXT_CONTRACT;
 
 typedef struct {
-	unsigned char nType;				//!<交易类型
-	unsigned char hash[HASH_SIZE];		//!<上一个交易的哈希
+	unsigned char nType;					//!<交易类型
+	unsigned char hash[HASH_SIZE];			//!<上一个交易的哈希
 	Int64 nMinus;
 }ARBIT_RES_CONTRACT;
+
+//暗黑币
+typedef struct  {
+	unsigned char	dnType;					//!<类型
+	char			buyer[6];				//!<买家ID（采用6字节的账户ID）
+	char			seller[6];				//!<卖家ID（采用6字节的账户ID）
+	int				nHeight;				//!<超时绝对高度
+	ULONGLONG		nPayMoney;				//!<买家向卖家支付的金额
+
+}DARK_FIRST_CONTRACT;
+
+typedef struct {
+	unsigned char dnType;					//!<交易类型
+	char hash[32];							//!<上一个交易包的哈希
+}DARK_NEXT_CONTRACT;
+
+
+//匿名交易
+typedef struct  
+{
+	char 			account[6];				//!<接受钱的ID（采用6字节的账户ID）
+	ULONGLONG		nReciMoney;				//!<	收到钱的金额
+} ACCOUNT_INFO;
+
+struct BASE_ANONYM_CONTRACT
+{
+	char 			szSender[6];			//!<转账人ID（采用6字节的账户ID）
+	int				nHeight;				//!<超时绝对高度
+	ULONGLONG		nPayMoney;				//!<转账的人支付的金额
+	unsigned short	len;                    //!<接受钱账户信息长度
+};
+
+struct ANONYM_CONTRACT:public BASE_ANONYM_CONTRACT
+{
+	vector<ACCOUNT_INFO> vAccInfo;
+};
+
+//P2P赌博
+typedef struct {
+	unsigned char type;
+	ULONGLONG money;
+	int hight;
+	unsigned char dhash[32];
+} SEND_DATA;
+
+typedef struct {
+	unsigned char type;
+	ULONGLONG money;
+	unsigned char targetkey[32];		//发起对赌的哈希，也是对赌数据的关键字
+	unsigned char data[5];
+} ACCEPT_DATA;
+
+typedef struct {
+	unsigned char type;
+	unsigned char targetkey[32];		//发起对赌的哈希，也是对赌数据的关键字
+	unsigned char dhash[5];
+} OPEN_DATA;
+
+//彩票
+typedef struct {
+	unsigned char type;
+	ULONGLONG money;
+	int hight;
+}REG_DATA;
+
+
+typedef struct {
+	unsigned char type;
+	unsigned char num[15];
+	unsigned char numlen;
+	ULONGLONG money;
+}ORDER_DATA;
+
+
+typedef struct {
+	unsigned char type;
+}DRAW_DATA;
 
 #pragma pack()
 
@@ -95,49 +248,127 @@ const signed char p_util_hexdigit[256] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, };
 
-template<typename T>
-std::string HexStr(const T itbegin, const T itend, bool fSpaces = false) {
-	std::string rv;
-	static const char hexmap[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-	rv.reserve((itend - itbegin) * 3);
-	for (T it = itbegin; it < itend; ++it) {
-		unsigned char val = (unsigned char) (*it);
-		if (fSpaces && it != itbegin)
-			rv.push_back(' ');
-		rv.push_back(hexmap[val >> 4]);
-		rv.push_back(hexmap[val & 15]);
-	}
-
-	return rv;
-}
-
 inline signed char HexDigit(char c)
 {
 	return p_util_hexdigit[(unsigned char)c];
 }
 
-template<typename T>
-inline std::string HexStr(const T& vch, bool fSpaces = false) {
-	return HexStr(vch.begin(), vch.end(), fSpaces);
-}
 
-extern void ProductHttpHead(const CStringA& configdir,CStringA &strPort,CStringA& strPreHeadstr,CStringA& strendHeadstr);
+
+class CSoyPayHelp
+{
+	DEFINE_SINGLETON(CSoyPayHelp)
+	static const int REG_ID_SIZE = 6;
+public:
+	string	GetReverseHash(const string& strHash);
+	string	GetHexData(const char*pData,size_t nLen);
+	string	ParseTxHashFromJson(const string& strJsonData);
+	string	ParseScriptIDFromJson(const string& strJsonData);
+	string  EncodeBase64(const unsigned char* pch, size_t len);
+	string  EncodeBase64(const string& str);
+	string	CreateContractTx(const string& strScript,const vector<string>& vAddr,const string& strContract,
+			int nHeight,int nFee);
+	string	SignContractTx(const string& strRawTxHash);
+	string	CreateScriptTx(const char* pAccount,bool bPath,const char* pScript,int nFee,int nHeight,
+				int nAuthTime=0,int nMoneyPerTime=0,int nMoneyTotal=0,int nMoneyPerDay=0,const string& strUserData="");
+	string	CreateScriptAccountTx(const char* pAccount,int nFee,bool bIsMiner);
+	string	CreateNomalTx(const char* pFrom,const char* pTo,int nMoney,int nFee,int nHeight);
+	bool	GetErrorMsg(const string& strRecvData,string& strErrorMsg);
+	string	Setgenerate(bool bStart);
+	string  GetFullRegID(const string& strRegID);
+
+	template<typename T>
+	std::string HexStr(const T itbegin, const T itend, bool fSpaces = false);
+
+	template<typename T>
+	inline std::string HexStr(const T& vch, bool fSpaces = false);
+
+	
+	
+
+	vector<unsigned char> ParseHex(const char* psz);
+	vector<unsigned char> ParseHex(const string& str);
+};
+
+//*******************************担保交易************************************************
+class CSesureTradeHelp
+{
+public:
+	string PacketFirstContract(const string& strBuyID,const string& strSellID,const vector<string>& vArRegID,
+		int nHeight,int nFine,int nPay,int nFee,int ndeposit);
+	string PacketSecondContract(unsigned char* pHash);
+	string PacketThirdContract(unsigned char* pHash);
+	string PacketLastContract(unsigned char* pHash,int nFine);
+
+private:
+	FIRST_CONTRACT		m_FirstContract;
+	NEXT_CONTRACT		m_SecondContract;
+	NEXT_CONTRACT		m_ThirdContract;
+	ARBIT_RES_CONTRACT	m_LastContract;
+};
+
+//********************************暗黑币************************************
+class CDarkTxHelp
+{
+public:
+	string PacketFirstContract(const string& strBuyID,const string& strSellID,int nMoney,int nHeight);
+	string PacketNextContract(const string& strTxHash);
+
+private:
+	DARK_FIRST_CONTRACT	 m_FirstContract;
+	DARK_NEXT_CONTRACT	 m_NextContract;
+};
+
+//********************************匿名交易************************************
+class CAnonymTxHelp
+{
+public:
+	string PackAnonymContract(const string& strSender,int nSendMoney,const vector<string>& vRecv,int nHeight);
+
+private:
+	ANONYM_CONTRACT	m_anonymContract;
+};
+
+//********************************P2P对赌************************************
+class CP2PBetHelp
+{
+public:
+	string PacketP2PSendContract(int nMoney,int nHeight,const string& strRandomHash);
+	string PacketP2PAcceptContract(int nMoney,const string& strSendHash,char* pData);
+	string PacketP2PExposeContract(const string& SendHash,const string& strRandomHash);
+
+private:
+	SEND_DATA		m_sendContract;
+	ACCEPT_DATA		m_acceptContract;
+	OPEN_DATA		m_openContract;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+extern void ProductHttpHead(const CStringA& configdir,const string& strCfgFileName,CStringA &strPort,CStringA& strPreHeadstr,CStringA& strendHeadstr);
 extern void RPCCommandToJson(const CString& strRPCCommand,CStringA& strSendData);
-extern void CreateScriptTx(const char* pAccount,bool bPath,const char* pScript,int nFee,int nHeight,
-	int nAuthTime=0,int nMoneyPerTime=0,int nMoneyTotal=0,int nMoneyPerDay=0,const string& strUserData="");
-extern void CreateScriptAccountTx(const char* pAccount,int nFee,int nHeight);
-extern bool GetErrorMsg(const string& strRecvData,string& strErrorMsg);
-extern void PacketFirstContract(enumSesureTrade emType,const char*pBuyID,const char* pSellID,const vector<string>& vArRegID,
-								int nHeight,int nFine,int nPay,int nFee,int ndeposit,FIRST_CONTRACT* pContract);
-extern void packetNextContract(enumSesureTrade emType,unsigned char* pHash,NEXT_CONTRACT* pNextContract);
-extern void packetLastContract(enumSesureTrade emType,unsigned char* pHash,int nFine,ARBIT_RES_CONTRACT* pLastContract);
-extern void CreateContractTx(const string& strScript,const vector<string>& vAddr,const vector<unsigned char>& contract,
-	int nHeight,int nFee);
+
+
 extern void ParseJsonAddrToMap(const CStringA& strValue,map<CString,CString>& mapAccount);
 extern CStringA ParseRecvData(const char*pRecvData);
-extern void CreateNomalTx(const char* pFrom,const char* pTo,int nMoney,int nFee,int nHeight);
 extern void Setgenerate(bool bStart);
-extern vector<unsigned char> ParseHex(const char* psz);
-extern vector<unsigned char> ParseHex(const string& str);
 extern string GetFullRegID(const CString& strRegID);
 extern CString GetCompressRegID(const CString& strRegID);
+extern void SendRPCData(const string& strData,emSendDataType emType);
+extern bool CheckRegIDValid(const CString& strRegID);
+extern bool CheckHash(const CString& strRegID);

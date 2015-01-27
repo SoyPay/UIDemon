@@ -48,8 +48,8 @@ void CDemoSocket::OnReceive(int nErrorCode)
 	 }
 	 else
 	 {
-		 CString str;
+		 /* CString str;
 		 str.Format(_T("连接错误,错误码:%d"),nErrorCode);
-		 AfxMessageBox(str);
+		 AfxMessageBox(str);*/
 	 }
  }
