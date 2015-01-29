@@ -380,7 +380,7 @@ string CSoyPayHelp::GetHexData(const char*pData,size_t nLen)
 }
 
 string CSoyPayHelp::CreateContractTx(const string& strScript,const vector<string>& vAddr,const string& strContract,
-	int nHeight,int nFee)
+	int nHeight,int64_t nFee)
 {
 	ASSERT(vAddr.size());
 	Json::Value root;
@@ -452,8 +452,8 @@ vector<unsigned char> CSoyPayHelp::ParseHex(const string& str) {
 	return ParseHex(str.c_str());
 }
 
-string CSoyPayHelp::CreateScriptTx(const char* pAccount,bool bPath,const char* pScript,int nFee,int nHeight,
-	int nAuthTime,int nMoneyPerTime,int nMoneyTotal,int nMoneyPerDay,const string& strUserData)
+string CSoyPayHelp::CreateScriptTx(const char* pAccount,bool bPath,const char* pScript,int64_t nFee,int nHeight,
+	int nAuthTime,int64_t nMoneyPerTime,int64_t nMoneyTotal,int64_t nMoneyPerDay,const string& strUserData)
 {
 	Json::Value root;
 
@@ -475,7 +475,7 @@ string CSoyPayHelp::CreateScriptTx(const char* pAccount,bool bPath,const char* p
 	return root.toStyledString();
 }
 
-string CSoyPayHelp::CreateScriptAccountTx(const char* pAccount,int nFee,bool bIsMiner)
+string CSoyPayHelp::CreateScriptAccountTx(const char* pAccount,int64_t nFee,bool bIsMiner)
 {
 	Json::Value root;
 
@@ -487,7 +487,7 @@ string CSoyPayHelp::CreateScriptAccountTx(const char* pAccount,int nFee,bool bIs
 	return root.toStyledString();
 }
 
-string CSoyPayHelp::CreateNomalTx(const char* pFrom,const char* pTo,int nMoney,int nFee,int nHeight)
+string CSoyPayHelp::CreateNomalTx(const char* pFrom,const char* pTo,int64_t nMoney,int64_t nFee,int nHeight)
 {
 	/*CStringA str;
 	int nfee = 0;
@@ -664,14 +664,14 @@ string CSoyPayHelp::GetFullRegID(const string& strRegID)
 
 //*******************************担保交易************************************************
 string CSesureTradeHelp::PacketFirstContract(const string& strBuyID,const string& strSellID,const vector<string>& vArRegID,
-	int nHeight,int nFine,int nPay,int nFee,int ndeposit)
+	int nHeight,int64_t nFine,int64_t nPay,int64_t nFee,int64_t ndeposit)
 {
 	memset(&m_FirstContract,0,sizeof(FIRST_CONTRACT));
 	m_FirstContract.nType = 1;
 	m_FirstContract.nArbitratorCount = static_cast<unsigned char>(vArRegID.size());
 	m_FirstContract.nHeight = nHeight;
 
-	unsigned char nSize = sizeof(int);
+	unsigned char nSize = sizeof(int64_t);
 	vector<unsigned char> v = CSoyPayHelp::getInstance()->ParseHex(strBuyID);
 	memcpy(m_FirstContract.buyer.accounid,&v[0],ACCOUNT_ID_SIZE);
 
@@ -710,19 +710,19 @@ string CSesureTradeHelp::PacketThirdContract(unsigned char* pHash)
 	return CSoyPayHelp::getInstance()->GetHexData((const char*)&m_ThirdContract,sizeof(NEXT_CONTRACT));
 }
 
-string CSesureTradeHelp::PacketLastContract(unsigned char* pHash,int nFine)
+string CSesureTradeHelp::PacketLastContract(unsigned char* pHash,int64_t nFine)
 {
 	memset(&m_LastContract,0,sizeof(ARBIT_RES_CONTRACT));
 	m_LastContract.nType = 4;
 	memcpy(m_LastContract.hash,pHash,HASH_SIZE);
-	memcpy(&m_LastContract.nMinus,(const char*)&nFine,sizeof(int));
+	memcpy(&m_LastContract.nMinus,(const char*)&nFine,sizeof(int64_t));
 
 	return CSoyPayHelp::getInstance()->GetHexData((const char*)&m_LastContract,sizeof(ARBIT_RES_CONTRACT));
 }
 
 
 //********************************暗黑币************************************
-string CDarkTxHelp::PacketFirstContract(const string& strBuyID,const string& strSellID,int nMoney,int nHeight)
+string CDarkTxHelp::PacketFirstContract(const string& strBuyID,const string& strSellID,int64_t nMoney,int nHeight)
 {
 	memset(&m_FirstContract,0,sizeof(DARK_FIRST_CONTRACT));
 	m_FirstContract.dnType = emDarkFirstStep;
@@ -780,7 +780,7 @@ string CAnonymTxHelp::PackAnonymContract(const string& strSender,int nSendMoney,
 }
 
 //********************************P2P对赌************************************
-string CP2PBetHelp::PacketP2PSendContract(int nMoney,int nHeight,const string& strRandomHash)
+string CP2PBetHelp::PacketP2PSendContract(int64_t nMoney,int nHeight,const string& strRandomHash)
 {
 	memset(&m_sendContract,0,sizeof(SEND_DATA));
 	m_sendContract.type = 1;
@@ -791,7 +791,7 @@ string CP2PBetHelp::PacketP2PSendContract(int nMoney,int nHeight,const string& s
 	return CSoyPayHelp::getInstance()->GetHexData((const char*)&m_sendContract,sizeof(SEND_DATA));
 }
 
-string CP2PBetHelp::PacketP2PAcceptContract(int nMoney,const string& strSendHash,char* pData)
+string CP2PBetHelp::PacketP2PAcceptContract(int64_t nMoney,const string& strSendHash,char* pData)
 {
 	memset(&m_acceptContract,0,sizeof(ACCEPT_DATA));
 	m_acceptContract.type = 2;

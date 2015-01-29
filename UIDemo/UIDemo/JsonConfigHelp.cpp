@@ -33,8 +33,8 @@ void CJsonConfigHelp::ReadJsonConfig(const string& strFilePath)
 void CJsonConfigHelp::ReadMainCfgData(const Json::Value& root)
 {
 	Json::Value mainCfg = root["mainconfig"];
-	ASSERT(!mainCfg.isNull());
-
+	ASSERT(!mainCfg.isNull());	
+	m_MainCfg.IntIsChinese=mainCfg["chinese"].asInt();
 	m_MainCfg.bStartServer = mainCfg["startserver"].asBool();
 	m_MainCfg.strServerCfgName = mainCfg["server_config_name"].asString();
 }

@@ -7,9 +7,12 @@ public:
 	CMainCfg()
 	{
 		bStartServer = false;
+		IntIsChinese = -1;
 	}
 
 	bool	bStartServer;
+	int	 IntIsChinese;
+	
 	string	strServerCfgName;
 };
 

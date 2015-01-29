@@ -10,8 +10,9 @@
 #include "json\json.h"
 
 using namespace std;
+typedef long long  int64_t;
 static const ULONGLONG COIN = 100000000;
-#define REAL_MONEY(x) static_cast<int>((x)*COIN)
+#define REAL_MONEY(x) static_cast<int64_t>((x)*COIN)
 
 #define BEGIN(a)            ((char*)&(a))
 #define END(a)              ((char*)&((&(a))[1]))
@@ -27,6 +28,9 @@ static const ULONGLONG COIN = 100000000;
 #define WM_LIST_TX				WM_USER+9
 #define WM_GET_ACCLIST			WM_USER+10
 #define WM_GET_BET_RANDOM_DATA	WM_USER+11
+#define WM_UPDATE				WM_USER+12
+
+#define WINDOW_TAG				_T("Dacrs-UIDemo")
 
 typedef enum
 {
@@ -126,7 +130,7 @@ typedef struct tag_INT64 {
 
 typedef struct tagACCOUNT_ID
 {
-	char accounid[MAX_ACCOUNT_LEN];
+	char accounid[ACCOUNT_ID_SIZE];
 }ACCOUNT_ID;
 
 
@@ -267,12 +271,12 @@ public:
 	string  EncodeBase64(const unsigned char* pch, size_t len);
 	string  EncodeBase64(const string& str);
 	string	CreateContractTx(const string& strScript,const vector<string>& vAddr,const string& strContract,
-			int nHeight,int nFee);
+			int nHeight,int64_t nFee);
 	string	SignContractTx(const string& strRawTxHash);
-	string	CreateScriptTx(const char* pAccount,bool bPath,const char* pScript,int nFee,int nHeight,
-				int nAuthTime=0,int nMoneyPerTime=0,int nMoneyTotal=0,int nMoneyPerDay=0,const string& strUserData="");
-	string	CreateScriptAccountTx(const char* pAccount,int nFee,bool bIsMiner);
-	string	CreateNomalTx(const char* pFrom,const char* pTo,int nMoney,int nFee,int nHeight);
+	string	CreateScriptTx(const char* pAccount,bool bPath,const char* pScript,int64_t nFee,int nHeight,
+				int nAuthTime=0,int64_t nMoneyPerTime=0,int64_t nMoneyTotal=0,int64_t nMoneyPerDay=0,const string& strUserData="");
+	string	CreateScriptAccountTx(const char* pAccount,int64_t nFee,bool bIsMiner);
+	string	CreateNomalTx(const char* pFrom,const char* pTo,int64_t nMoney,int64_t nFee,int nHeight);
 	bool	GetErrorMsg(const string& strRecvData,string& strErrorMsg);
 	string	Setgenerate(bool bStart);
 	string  GetFullRegID(const string& strRegID);
@@ -295,10 +299,10 @@ class CSesureTradeHelp
 {
 public:
 	string PacketFirstContract(const string& strBuyID,const string& strSellID,const vector<string>& vArRegID,
-		int nHeight,int nFine,int nPay,int nFee,int ndeposit);
+		int nHeight,int64_t nFine,int64_t nPay,int64_t nFee,int64_t ndeposit);
 	string PacketSecondContract(unsigned char* pHash);
 	string PacketThirdContract(unsigned char* pHash);
-	string PacketLastContract(unsigned char* pHash,int nFine);
+	string PacketLastContract(unsigned char* pHash,int64_t nFine);
 
 private:
 	FIRST_CONTRACT		m_FirstContract;
@@ -311,7 +315,7 @@ private:
 class CDarkTxHelp
 {
 public:
-	string PacketFirstContract(const string& strBuyID,const string& strSellID,int nMoney,int nHeight);
+	string PacketFirstContract(const string& strBuyID,const string& strSellID,int64_t nMoney,int nHeight);
 	string PacketNextContract(const string& strTxHash);
 
 private:
@@ -333,8 +337,8 @@ private:
 class CP2PBetHelp
 {
 public:
-	string PacketP2PSendContract(int nMoney,int nHeight,const string& strRandomHash);
-	string PacketP2PAcceptContract(int nMoney,const string& strSendHash,char* pData);
+	string PacketP2PSendContract(int64_t nMoney,int nHeight,const string& strRandomHash);
+	string PacketP2PAcceptContract(int64_t nMoney,const string& strSendHash,char* pData);
 	string PacketP2PExposeContract(const string& SendHash,const string& strRandomHash);
 
 private:
