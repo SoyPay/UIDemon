@@ -97,6 +97,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="json_internalarray.inl" />
     <None Include="json_internalmap.inl" />
     <None Include="json_valueiterator.inl" />
@@ -130,9 +131,11 @@
     <ClInclude Include="LotteryDlg.h" />
     <ClInclude Include="P2PBetDlg.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="RpcCmd.h" />
     <ClInclude Include="RPCDlg.h" />
     <ClInclude Include="SesureDlg.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SynchronousSocket.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="UIDemo.h" />
     <ClInclude Include="UIDemotDlg.h" />
@@ -164,12 +167,14 @@
     <ClCompile Include="LoadLanguage.cpp" />
     <ClCompile Include="LotteryDlg.cpp" />
     <ClCompile Include="P2PBetDlg.cpp" />
+    <ClCompile Include="RpcCmd.cpp" />
     <ClCompile Include="RPCDlg.cpp" />
     <ClCompile Include="SesureDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SynchronousSocket.cpp" />
     <ClCompile Include="UIDemo.cpp" />
     <ClCompile Include="UIDemoDlg.cpp" />
     <ClCompile Include="UpdateVerDlg.cpp" />
