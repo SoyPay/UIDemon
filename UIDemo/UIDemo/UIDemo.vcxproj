@@ -134,6 +134,7 @@
     <ClInclude Include="RpcCmd.h" />
     <ClInclude Include="RPCDlg.h" />
     <ClInclude Include="SesureDlg.h" />
+    <ClInclude Include="ShowJosn.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SynchronousSocket.h" />
     <ClInclude Include="targetver.h" />
@@ -170,6 +171,7 @@
     <ClCompile Include="RpcCmd.cpp" />
     <ClCompile Include="RPCDlg.cpp" />
     <ClCompile Include="SesureDlg.cpp" />
+    <ClCompile Include="ShowJosn.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

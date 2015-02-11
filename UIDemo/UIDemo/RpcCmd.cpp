@@ -100,7 +100,7 @@ void CRpcCmd::RPCCommandToJson(const CString& strRPCCommand,CStringA& strSendDat
 			param.TrimRight();
 			rpcCommand = rpcCommand.Mid(pos+1);
 			rpcCommand = rpcCommand.TrimLeft();
-			if (param.GetLength()<10)
+			if (param.GetLength()<10&&IsAllDigtal(param))
 			{
 				root["params"].append(atoi(param));
 			}

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include "json\json.h"
+#include "RpcCmd.h"
 
 using namespace std;
 typedef long long  int64_t;
@@ -262,8 +263,19 @@ inline signed char HexDigit(char c)
 class CSoyPayHelp
 {
 	DEFINE_SINGLETON(CSoyPayHelp)
-	static const int REG_ID_SIZE = 6;
+	static const int		REG_ID_SIZE = 6;
+	CStringA				m_sendPreHeadstr;
+	CStringA				m_sendendHeadstr;
 public:
+	void SetHeadString(const CStringA	 &sendPreHeadstr,const CStringA &sendendHeadstr)
+	{
+		m_sendPreHeadstr = sendPreHeadstr;
+		m_sendendHeadstr = sendendHeadstr;
+	}
+	void InitialRpcCmd(CRpcCmd &mRpcCmd){
+		ASSERT(m_sendPreHeadstr != m_sendPreHeadstr && m_sendPreHeadstr!=T(""));
+		mRpcCmd.SetHeadString(m_sendPreHeadstr,m_sendendHeadstr);
+	}
 	string	GetReverseHash(const string& strHash);
 	string	GetHexData(const char*pData,size_t nLen);
 	string	ParseTxHashFromJson(const string& strJsonData);
