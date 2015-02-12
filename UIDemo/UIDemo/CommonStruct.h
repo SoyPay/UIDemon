@@ -273,7 +273,7 @@ public:
 		m_sendendHeadstr = sendendHeadstr;
 	}
 	void InitialRpcCmd(CRpcCmd &mRpcCmd){
-		ASSERT(m_sendPreHeadstr != m_sendPreHeadstr && m_sendPreHeadstr!=T(""));
+	
 		mRpcCmd.SetHeadString(m_sendPreHeadstr,m_sendendHeadstr);
 	}
 	string	GetReverseHash(const string& strHash);
