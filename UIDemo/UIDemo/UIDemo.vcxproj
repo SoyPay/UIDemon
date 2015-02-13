@@ -97,7 +97,6 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
     <None Include="json_internalarray.inl" />
     <None Include="json_internalmap.inl" />
     <None Include="json_valueiterator.inl" />
@@ -108,6 +107,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnonymTxDlg.h" />
+    <ClInclude Include="autocom\AutoComplete.h" />
+    <ClInclude Include="autocom\Subclass.h" />
     <ClInclude Include="BaseDlg.h" />
     <ClInclude Include="BaseFuncionDlg.h" />
     <ClInclude Include="BaseFunctionExDlg.h" />
@@ -145,6 +146,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnonymTxDlg.cpp" />
+    <ClCompile Include="autocom\AutoComplete.cpp" />
+    <ClCompile Include="autocom\Subclass.cpp" />
     <ClCompile Include="BaseDlg.cpp" />
     <ClCompile Include="BaseFuncionDlg.cpp" />
     <ClCompile Include="BaseFunctionExDlg.cpp" />

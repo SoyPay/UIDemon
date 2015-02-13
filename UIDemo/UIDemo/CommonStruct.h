@@ -9,6 +9,7 @@
 #include <vector>
 #include "json\json.h"
 #include "RpcCmd.h"
+#include "RPCDlg.h"
 
 using namespace std;
 typedef long long  int64_t;
@@ -264,18 +265,26 @@ class CSoyPayHelp
 {
 	DEFINE_SINGLETON(CSoyPayHelp)
 	static const int		REG_ID_SIZE = 6;
-	CStringA				m_sendPreHeadstr;
-	CStringA				m_sendendHeadstr;
-public:
-	void SetHeadString(const CStringA	 &sendPreHeadstr,const CStringA &sendendHeadstr)
-	{
-		m_sendPreHeadstr = sendPreHeadstr;
-		m_sendendHeadstr = sendendHeadstr;
-	}
-	void InitialRpcCmd(CRpcCmd &mRpcCmd){
+	CRPCDlg*		 m_pRPCDlg;		
+	CRpcCmd mRpcCmd;
+
 	
-		mRpcCmd.SetHeadString(m_sendPreHeadstr,m_sendendHeadstr);
+private:
+	CStringA ParseRecvData(const char*pRecvData);
+
+public:
+
+	void InitialRpcCmd(CRPCDlg * pdlg,const CStringA	 &sendPreHeadstr,const CStringA &sendendHeadstr)
+	{
+		mRpcCmd.SetHeadString(sendPreHeadstr,sendendHeadstr);
+		m_pRPCDlg = pdlg;
 	}
+
+	int SendRpc(CString cmd,CStringA &rev);
+
+
+
+
 	string	GetReverseHash(const string& strHash);
 	string	GetHexData(const char*pData,size_t nLen);
 	string	ParseTxHashFromJson(const string& strJsonData);

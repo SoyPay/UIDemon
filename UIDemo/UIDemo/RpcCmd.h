@@ -16,6 +16,8 @@ public:
 		m_sendPreHeadstr = sendPreHeadstr;
 		m_sendendHeadstr = sendendHeadstr;
 	}
+
+	 CStringA RpcJosnStr;
     void BuildSendString(const CString	 &cmd,CStringA &sendStr);
 	
 	~CRpcCmd(void);

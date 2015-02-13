@@ -54,6 +54,7 @@ void CRpcCmd:: BuildSendString(const CString &cmd,CStringA &sendStr)
 {
    CStringA sendStrte;
    RPCCommandToJson(cmd,sendStrte);
+   RpcJosnStr = sendStrte;
    string tepsend = sendStrte.GetString();
    string nSendStr = "";
    nSendStr += m_sendPreHeadstr;

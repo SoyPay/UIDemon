@@ -362,6 +362,33 @@ CString GetCompressRegID(const CString& strRegID)
 	str.Format(_T("%d-%d"),nHeight,nIndex);
 	return str;
 }
+int CSoyPayHelp::SendRpc(CString cmd,CStringA &rev)
+{
+	string revtemp;
+	mRpcCmd.SendRpc(cmd,revtemp);
+	CStringA strShowData = ParseRecvData(revtemp.c_str());
+	if(m_pRPCDlg != NULL)
+	{
+		m_pRPCDlg->SendMessage(WM_SHOW_SEND_DATA,(WPARAM)&mRpcCmd.RpcJosnStr);
+		m_pRPCDlg->SendMessage(WM_SHOW_RECV_DATA,(WPARAM)&strShowData);
+	}
+	rev = strShowData;
+	return rev.GetLength();
+}
+CStringA CSoyPayHelp::ParseRecvData(const char*pRecvData)
+{
+	CStringA strShowData = ParseJsonToList(pRecvData);
+	if (0 == strShowData.Find("null"))
+	{
+		string strErrorMsg;
+		if(CSoyPayHelp::getInstance()->GetErrorMsg(pRecvData,strErrorMsg))
+		{
+			strShowData = strErrorMsg.c_str();
+		}
+	}
+
+	return strShowData;
+}
 
 string CSoyPayHelp::GetReverseHash(const string& strHash)
 {
